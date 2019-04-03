@@ -199,15 +199,19 @@ function filterCampaigns(e) {
 }
 
 function guessDateRange() {
-  const selectedCampaigns = Array.from(document.getElementById('campaigns').selectedOptions).map(v=>v.value);
+  const dates = [];
 
-  if (selectedCampaigns.length) {
-    const campaign = selectedCampaigns[0];
+  for (const campaign of Array.from(document.getElementById('campaigns').selectedOptions).map(v=>v.value)) {
+    const match = campaign.match(/_(20\d{2})_(\d{4})-(\d{4})_/);
 
-    const match = campaign.match(/_(20\d{2})_(\d{2})(\d{2})-(\d{2})(\d{2})_/);
     if (match) {
-      document.getElementById('start-time').value = `${match[1]}-${match[2]}-${match[3]}`;
-      document.getElementById('end-time').value = `${match[1]}-${match[4]}-${match[5]}`;
+      const endYear = match[3] < match[2] ? `${match[1] + 1}` : match[1];
+
+      dates.push(`${match[1]}-${match[2].substr(0,2)}-${match[2].substr(2,2)}`);
+      dates.push(`${endYear}-${match[3].substr(0,2)}-${match[3].substr(2,2)}`);
+
+      document.getElementById('start-time').value = dates.sort((a, b) => a.localeCompare(b))[0]
+      document.getElementById('end-time').value = dates.sort((a, b) => b.localeCompare(a))[0]
     }
   }
 }
