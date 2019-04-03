@@ -158,8 +158,7 @@ async function loadReport(report) {
       const siteName = details.Grouping.SiteId ? (await getSite(details.Grouping.SiteId)).Title : '';
 
       const tr = body.appendChild(document.createElement('tr'));
-      tr.appendChild(document.createElement('td')).innerHTML = details.FirstDate;
-      tr.appendChild(document.createElement('td')).innerHTML = details.LastDate;
+      tr.appendChild(document.createElement('td')).innerHTML = details.FirstDate.substr(0, 10);
       tr.appendChild(document.createElement('td')).innerHTML = advertiserName;
       tr.appendChild(document.createElement('td')).innerHTML = campaignName;
       tr.appendChild(document.createElement('td')).innerHTML = creativeName;
@@ -168,20 +167,10 @@ async function loadReport(report) {
       tr.appendChild(document.createElement('td')).innerHTML = details.Grouping.CountryCode ? details.Grouping.CountryCode : '';
       tr.appendChild(document.createElement('td')).innerHTML = details.Grouping.MetroCode ? details.Grouping.MetroCode : '';
       tr.appendChild(document.createElement('td')).innerHTML = details.Impressions;
-      // tr.appendChild(document.createElement('td')).innerHTML = (campaign ? campaign.Name : '');
-      // tr.appendChild(document.createElement('td')).innerHTML = (zone ? zone.Name : '');
-      // tr.appendChild(document.createElement('td')).innerHTML = details.Impressions;
     }
-
-    // const tr = body.appendChild(document.createElement('tr'));
-    // tr.appendChild(document.createElement('td')).innerHTML = record.Date;
-    // tr.appendChild(document.createElement('td'));
-    // tr.appendChild(document.createElement('td'));
-    // tr.appendChild(document.createElement('td')).innerHTML = record.Impressions;
   }
 
   const tr = footer.appendChild(document.createElement('tr'));
-  tr.appendChild(document.createElement('td'));
   tr.appendChild(document.createElement('td'));
   tr.appendChild(document.createElement('td'));
   tr.appendChild(document.createElement('td'));
