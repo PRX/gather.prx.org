@@ -1,0 +1,78 @@
+<!doctype html>
+<html lang=en>
+  <head>
+    <meta charset=utf-8 />
+    <title>Report Gatherer</title>
+
+    <link rel=stylesheet href=css.css>
+    <script src=js.js></script>
+  </head>
+  <body>
+    <div id=key-error><h1>Invalid Adzerk API Key</h1></div>
+    <div id=grid>
+      <form>
+        <fieldset>
+          <input list=advertiser-list id=advertiser placeholder="Search advertisers (⌘ + K)" autofocus title="Search advertisers (⌘ + K)">
+          <datalist id=advertiser-list></datalist>
+        </fieldset>
+
+        <fieldset>
+          <input id=campaigns-filter placeholder="Filter campaigns (⌘ + F)" title="Filter campaigns (⌘ + F)">
+          <select id=campaigns multiple></select>
+        </fieldset>
+
+        <fieldset>
+          <input type=date id=start-time value=2019-03-21>
+          <input type=date id=end-time value=2019-03-25>
+        </fieldset>
+
+        <fieldset>
+          <select id=date-group>
+            <option value=day>Group by Day</option>
+            <option value=week>Group by Week</option>
+            <option value=month>Group by Month</option>
+          </select>
+        </fieldset>
+
+        <fieldset>
+          <select id=parameter-group multiple>
+            <option value=brandId>Advertiser</option>
+            <option value=campaignId>Campaign</option>
+            <option value=creativeId>Creative</option>
+            <option value=siteId>Site</option>
+            <option value=zoneId>Zone</option>
+            <option value=countryCode>Country</option>
+            <option value=metroCode>Metro</option>
+          </select>
+        </fieldset>
+
+        <fieldset>
+          <input type=submit id=generate-report value="Generate Report (⌘ + G)" title="Generate report (⌘ + G)">
+        </fieldset>
+      </form>
+
+      <div id=report-download>Download (⌘ + D)</div>
+      <div id=report>
+        <div id=report-placeholder><h1>Please Generate a Report</h1></div>
+        <table id=report-result>
+          <thead>
+            <tr>
+              <th>Start</th>
+              <th>Ends</th>
+              <th>Advertiser</th>
+              <th>Campaign</th>
+              <th>Creative</th>
+              <th>Site</th>
+              <th>Zone</th>
+              <th>Country</th>
+              <th>Metro</th>
+              <th>Impressions</th>
+            </tr>
+          </thead>
+          <tbody id=report-result-body></tbody>
+          <tfoot id=report-result-footer></tfoot>
+        </table>
+      </div>
+    </div>
+  </body>
+</html>
