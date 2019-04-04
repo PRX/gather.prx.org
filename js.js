@@ -202,13 +202,16 @@ function guessDateRange() {
   const dates = [];
 
   for (const campaign of Array.from(document.getElementById('campaigns').selectedOptions).map(v=>v.value)) {
-    const match = campaign.match(/_(20\d{2})_(\d{4})-(\d{4})_/);
+    const match = campaign.match(/_(20\d{2})_(\d{4})-(\d{4}|\?{2})_/);
 
     if (match) {
       const endYear = match[3] < match[2] ? `${match[1] + 1}` : match[1];
+      let endMmDd = `${match[3].substr(0,2)}-${match[3].substr(2,2)}`;
+
+      if (match[3] === '??') { endMmDd = `${match[2].substr(0,2)}-${match[2].substr(2,2)}`; }
 
       dates.push(`${match[1]}-${match[2].substr(0,2)}-${match[2].substr(2,2)}`);
-      dates.push(`${endYear}-${match[3].substr(0,2)}-${match[3].substr(2,2)}`);
+      dates.push(`${endYear}-${endMmDd}`);
 
       document.getElementById('start-time').value = dates.sort((a, b) => a.localeCompare(b))[0]
       document.getElementById('end-time').value = dates.sort((a, b) => b.localeCompare(a))[0]
