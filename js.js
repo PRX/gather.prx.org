@@ -4,6 +4,7 @@ const BASE_URL = 'https://62y4dsxai6.execute-api.us-east-1.amazonaws.com/prod';
 CACHE = {
   zones: {},
   creatives: {},
+  flights: {},
   sites: {}
 };
 
@@ -34,6 +35,22 @@ function getCreative(creativeId) {
       fetch(url, { headers: COMMON_HEADERS })
         .then(response => response.json())
         .then(data => { CACHE.creatives[creativeId] = data; resolve(data); })
+        .catch(e => reject(e));
+    }
+  });
+}
+
+// https://dev.adzerk.com/v1.0/reference/flight#get-flight
+function getFlight(flightId) {
+  return new Promise((resolve, reject) => {
+    if (CACHE.flights[flightId]) {
+      resolve(CACHE.flights[flightId]);
+    } else {
+      const url = `${BASE_URL}/management/v1/flight/${flightId}`;
+
+      fetch(url, { headers: COMMON_HEADERS })
+        .then(response => response.json())
+        .then(data => { CACHE.flights[flightId] = data; resolve(data); })
         .catch(e => reject(e));
     }
   });
@@ -154,6 +171,7 @@ async function loadReport(report) {
       const advertiserName = details.Grouping.BrandId ? document.getElementById('advertiser-list').advertisers.find(a => details.Grouping.BrandId === a.Id).Title : '';
       const campaignName = details.Grouping.CampaignId ? document.getElementById('campaigns').campaigns.find(c => details.Grouping.CampaignId === c.Id).Name : '';
       const zoneName = details.Grouping.ZoneId ? (await getZone(details.Grouping.ZoneId)).Name : '';
+      const flightName = details.Grouping.OptionId ? (await getFlight(details.Grouping.OptionId)).Name : '';
       const creativeName = details.Grouping.CreativeId ? (await getCreative(details.Grouping.CreativeId)).Title : '';
       const siteName = details.Grouping.SiteId ? (await getSite(details.Grouping.SiteId)).Title : '';
 
@@ -161,6 +179,7 @@ async function loadReport(report) {
       tr.appendChild(document.createElement('td')).innerHTML = details.FirstDate.substr(0, 10);
       tr.appendChild(document.createElement('td')).innerHTML = advertiserName;
       tr.appendChild(document.createElement('td')).innerHTML = campaignName;
+      tr.appendChild(document.createElement('td')).innerHTML = flightName;
       tr.appendChild(document.createElement('td')).innerHTML = creativeName;
       tr.appendChild(document.createElement('td')).innerHTML = siteName;
       tr.appendChild(document.createElement('td')).innerHTML = zoneName;
@@ -171,6 +190,7 @@ async function loadReport(report) {
   }
 
   const tr = footer.appendChild(document.createElement('tr'));
+  tr.appendChild(document.createElement('td'));
   tr.appendChild(document.createElement('td'));
   tr.appendChild(document.createElement('td'));
   tr.appendChild(document.createElement('td'));
