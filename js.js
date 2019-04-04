@@ -189,7 +189,7 @@ function filterCampaigns(e) {
   campaignsEl.innerHTML = '';
 
   document.getElementById('campaigns-filter').value.split(' ').reduce((result, filter) => {
-    const re = new RegExp(filter, 'i');
+    const re = new RegExp(filter.replace(/\?/g, '\\?'), 'i');
     return (result||[]).filter(c => c.Name.match(re));
   }, campaignsEl.campaigns).forEach(campaign => {
     const optionEl = document.createElement('option');
