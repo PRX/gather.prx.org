@@ -219,24 +219,31 @@ function filterCampaigns(e) {
 }
 
 function guessDateRange() {
-  const dates = [];
+  if (document.getElementById('date-locked').getAttribute('data-value') === '0') {
+    const dates = [];
 
-  for (const campaign of Array.from(document.getElementById('campaigns').selectedOptions).map(v=>v.value)) {
-    const match = campaign.match(/_(20\d{2})_(\d{4})-(\d{4}|\?{2})_/);
+    for (const campaign of Array.from(document.getElementById('campaigns').selectedOptions).map(v=>v.value)) {
+      const match = campaign.match(/_(20\d{2})_(\d{4})-(\d{4}|\?{2})_/);
 
-    if (match) {
-      const endYear = match[3] < match[2] ? `${match[1] + 1}` : match[1];
-      let endMmDd = `${match[3].substr(0,2)}-${match[3].substr(2,2)}`;
+      if (match) {
+        const endYear = match[3] < match[2] ? `${match[1] + 1}` : match[1];
+        let endMmDd = `${match[3].substr(0,2)}-${match[3].substr(2,2)}`;
 
-      if (match[3] === '??') { endMmDd = `${match[2].substr(0,2)}-${match[2].substr(2,2)}`; }
+        if (match[3] === '??') { endMmDd = `${match[2].substr(0,2)}-${match[2].substr(2,2)}`; }
 
-      dates.push(`${match[1]}-${match[2].substr(0,2)}-${match[2].substr(2,2)}`);
-      dates.push(`${endYear}-${endMmDd}`);
+        dates.push(`${match[1]}-${match[2].substr(0,2)}-${match[2].substr(2,2)}`);
+        dates.push(`${endYear}-${endMmDd}`);
 
-      document.getElementById('start-time').value = dates.sort((a, b) => a.localeCompare(b))[0]
-      document.getElementById('end-time').value = dates.sort((a, b) => b.localeCompare(a))[0]
+        document.getElementById('start-time').value = dates.sort((a, b) => a.localeCompare(b))[0]
+        document.getElementById('end-time').value = dates.sort((a, b) => b.localeCompare(a))[0]
+      }
     }
   }
+}
+
+function toggleDateGuesser() {
+  const lock = document.getElementById('date-locked');
+  lock.setAttribute('data-value', `${(1 - (+lock.getAttribute('data-value')))}`);
 }
 
 async function selectAdvertiser() {
@@ -299,6 +306,8 @@ function hotkeys(e) {
     e.preventDefault(); document.getElementById('campaigns-filter').focus();
   } else if (e.metaKey && e.key === 'd') {
     e.preventDefault(); downloadReport();
+  } else if (e.metaKey && e.key === 'l') {
+    e.preventDefault(); toggleDateGuesser();
   }
 }
 
@@ -313,6 +322,7 @@ function hotkeys(e) {
     document.getElementById('campaigns').addEventListener('input', guessDateRange);
     document.getElementById('generate-report').addEventListener('click', generateReport);
     document.getElementById('report-download').addEventListener('click', downloadReport);
+    document.getElementById('date-locked').addEventListener('click', toggleDateGuesser);
 
     // Get the list of advertisers and load it into the data list
     const advertiserListEl = document.getElementById('advertiser-list');
