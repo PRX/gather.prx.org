@@ -226,7 +226,7 @@ function guessDateRange() {
       const match = campaign.match(/_(20\d{2})_(\d{4})-(\d{4}|\?{2})_/);
 
       if (match) {
-        const endYear = match[3] < match[2] ? `${match[1] + 1}` : match[1];
+        const endYear = match[3] < match[2] ? `${(+match[1]) + 1}` : match[1];
         let endMmDd = `${match[3].substr(0,2)}-${match[3].substr(2,2)}`;
 
         if (match[3] === '??') { endMmDd = `${match[2].substr(0,2)}-${match[2].substr(2,2)}`; }
