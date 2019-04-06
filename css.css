@@ -94,9 +94,15 @@ fieldset:nth-child(3) { margin-top: 10px; }
   margin: 0;
   outline: none;
   padding: 15px;
-  width: 185px;
+  width: 171px;
 }
-#start-time { width: 186px; }
+#start-time { width: 176px; }
+
+#date-locked {
+  height: 20px;
+  width: 20px;
+}
+#date-locked[data-value='0'] { opacity: 0.3; }
 
 fieldset:nth-child(4) { margin-top: 10px; }
 

@@ -4,6 +4,7 @@ const BASE_URL = 'https://62y4dsxai6.execute-api.us-east-1.amazonaws.com/prod';
 CACHE = {
   zones: {},
   creatives: {},
+  flights: {},
   sites: {}
 };
 
@@ -34,6 +35,22 @@ function getCreative(creativeId) {
       fetch(url, { headers: COMMON_HEADERS })
         .then(response => response.json())
         .then(data => { CACHE.creatives[creativeId] = data; resolve(data); })
+        .catch(e => reject(e));
+    }
+  });
+}
+
+// https://dev.adzerk.com/v1.0/reference/flight#get-flight
+function getFlight(flightId) {
+  return new Promise((resolve, reject) => {
+    if (CACHE.flights[flightId]) {
+      resolve(CACHE.flights[flightId]);
+    } else {
+      const url = `${BASE_URL}/management/v1/flight/${flightId}`;
+
+      fetch(url, { headers: COMMON_HEADERS })
+        .then(response => response.json())
+        .then(data => { CACHE.flights[flightId] = data; resolve(data); })
         .catch(e => reject(e));
     }
   });
@@ -154,6 +171,7 @@ async function loadReport(report) {
       const advertiserName = details.Grouping.BrandId ? document.getElementById('advertiser-list').advertisers.find(a => details.Grouping.BrandId === a.Id).Title : '';
       const campaignName = details.Grouping.CampaignId ? document.getElementById('campaigns').campaigns.find(c => details.Grouping.CampaignId === c.Id).Name : '';
       const zoneName = details.Grouping.ZoneId ? (await getZone(details.Grouping.ZoneId)).Name : '';
+      const flightName = details.Grouping.OptionId ? (await getFlight(details.Grouping.OptionId)).Name : '';
       const creativeName = details.Grouping.CreativeId ? (await getCreative(details.Grouping.CreativeId)).Title : '';
       const siteName = details.Grouping.SiteId ? (await getSite(details.Grouping.SiteId)).Title : '';
 
@@ -161,6 +179,7 @@ async function loadReport(report) {
       tr.appendChild(document.createElement('td')).innerHTML = details.FirstDate.substr(0, 10);
       tr.appendChild(document.createElement('td')).innerHTML = advertiserName;
       tr.appendChild(document.createElement('td')).innerHTML = campaignName;
+      tr.appendChild(document.createElement('td')).innerHTML = flightName;
       tr.appendChild(document.createElement('td')).innerHTML = creativeName;
       tr.appendChild(document.createElement('td')).innerHTML = siteName;
       tr.appendChild(document.createElement('td')).innerHTML = zoneName;
@@ -171,6 +190,7 @@ async function loadReport(report) {
   }
 
   const tr = footer.appendChild(document.createElement('tr'));
+  tr.appendChild(document.createElement('td'));
   tr.appendChild(document.createElement('td'));
   tr.appendChild(document.createElement('td'));
   tr.appendChild(document.createElement('td'));
@@ -199,24 +219,31 @@ function filterCampaigns(e) {
 }
 
 function guessDateRange() {
-  const dates = [];
+  if (document.getElementById('date-locked').getAttribute('data-value') === '0') {
+    const dates = [];
 
-  for (const campaign of Array.from(document.getElementById('campaigns').selectedOptions).map(v=>v.value)) {
-    const match = campaign.match(/_(20\d{2})_(\d{4})-(\d{4}|\?{2})_/);
+    for (const campaign of Array.from(document.getElementById('campaigns').selectedOptions).map(v=>v.value)) {
+      const match = campaign.match(/_(20\d{2})_(\d{4})-(\d{4}|\?{2})_/);
 
-    if (match) {
-      const endYear = match[3] < match[2] ? `${match[1] + 1}` : match[1];
-      let endMmDd = `${match[3].substr(0,2)}-${match[3].substr(2,2)}`;
+      if (match) {
+        const endYear = match[3] < match[2] ? `${(+match[1]) + 1}` : match[1];
+        let endMmDd = `${match[3].substr(0,2)}-${match[3].substr(2,2)}`;
 
-      if (match[3] === '??') { endMmDd = `${match[2].substr(0,2)}-${match[2].substr(2,2)}`; }
+        if (match[3] === '??') { endMmDd = `${match[2].substr(0,2)}-${match[2].substr(2,2)}`; }
 
-      dates.push(`${match[1]}-${match[2].substr(0,2)}-${match[2].substr(2,2)}`);
-      dates.push(`${endYear}-${endMmDd}`);
+        dates.push(`${match[1]}-${match[2].substr(0,2)}-${match[2].substr(2,2)}`);
+        dates.push(`${endYear}-${endMmDd}`);
 
-      document.getElementById('start-time').value = dates.sort((a, b) => a.localeCompare(b))[0]
-      document.getElementById('end-time').value = dates.sort((a, b) => b.localeCompare(a))[0]
+        document.getElementById('start-time').value = dates.sort((a, b) => a.localeCompare(b))[0]
+        document.getElementById('end-time').value = dates.sort((a, b) => b.localeCompare(a))[0]
+      }
     }
   }
+}
+
+function toggleDateGuesser() {
+  const lock = document.getElementById('date-locked');
+  lock.setAttribute('data-value', `${(1 - (+lock.getAttribute('data-value')))}`);
 }
 
 async function selectAdvertiser() {
@@ -279,6 +306,8 @@ function hotkeys(e) {
     e.preventDefault(); document.getElementById('campaigns-filter').focus();
   } else if (e.metaKey && e.key === 'd') {
     e.preventDefault(); downloadReport();
+  } else if (e.metaKey && e.key === 'l') {
+    e.preventDefault(); toggleDateGuesser();
   }
 }
 
@@ -293,6 +322,7 @@ function hotkeys(e) {
     document.getElementById('campaigns').addEventListener('input', guessDateRange);
     document.getElementById('generate-report').addEventListener('click', generateReport);
     document.getElementById('report-download').addEventListener('click', downloadReport);
+    document.getElementById('date-locked').addEventListener('click', toggleDateGuesser);
 
     // Get the list of advertisers and load it into the data list
     const advertiserListEl = document.getElementById('advertiser-list');
