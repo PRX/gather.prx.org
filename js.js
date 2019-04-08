@@ -119,7 +119,7 @@ function requestData() {
   const parameterGroupEl = document.getElementById('parameter-group');
 
   return {
-    GroupBy: [dateGroupEl.value].concat(Array.from(parameterGroupEl.selectedOptions).map(o => o.value )),
+    GroupBy: (dateGroupEl.value ? [dateGroupEl.value] : []).concat(Array.from(parameterGroupEl.selectedOptions).map(o => o.value)),
     StartDateISO: `${startTimeEl.value}T00:00:00`,
     EndDateISO: `${endTimeEl.value}T00:00:00`,
     Parameters: Array.from(campaignsEl.selectedOptions).map(option => {
