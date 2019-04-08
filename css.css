@@ -143,6 +143,7 @@ fieldset:nth-child(6) { margin-top: 40px; }
   text-transform: uppercase;
   width: 440px;
 }
+#generate-report:hover { background: #003A57; }
 #generate-report.working { background: #BD0089 }
 
 #report {
