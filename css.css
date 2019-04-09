@@ -9,6 +9,12 @@ body {
   padding: 0;
 }
 
+#void {
+  left: -100vw;
+  position: absolute;
+  top: 0;
+}
+
 #key-error {
   background: rgba(0, 0, 0, 0.85);
   color: white;
@@ -262,8 +268,11 @@ fieldset:nth-child(6) { margin-top: 40px; }
 }
 
 #report-result th {
+  cursor: default;
   text-align: left;
+  user-select: none;
 }
+#report-result th:hover { background: #1a1a1a; color: white; }
 
 #report-result tfoot tr {
   background: #ccc;

@@ -301,6 +301,22 @@ function downloadReport() {
   }
 }
 
+function copyTableColumn(e) {
+  e.preventDefault();
+
+  const columnIndex = Array.from(e.target.parentNode.children).indexOf(e.target);
+  const values = Array.from(document.querySelectorAll(`#report-result td:nth-child(${columnIndex + 1})`)).map(c => c.innerText);
+
+  const el = document.createElement('textarea');
+  document.getElementById('void').appendChild(el);
+  el.textContent = values.join('\n');
+
+  window.getSelection().removeAllRanges();
+  el.select();
+  document.execCommand('copy');
+  document.getElementById('void').removeChild(el);
+}
+
 function hotkeys(e) {
   if (e.metaKey && e.key === 'k') {
     e.preventDefault(); document.getElementById('advertiser').focus();
@@ -327,6 +343,7 @@ function hotkeys(e) {
     document.getElementById('generate-report').addEventListener('click', generateReport);
     document.getElementById('report-download').addEventListener('click', downloadReport);
     document.getElementById('date-locked').addEventListener('click', toggleDateGuesser);
+    Array.from(document.querySelectorAll('#report-result th')).forEach(h => h.addEventListener('click', copyTableColumn));
 
     // Get the list of advertisers and load it into the data list
     const advertiserListEl = document.getElementById('advertiser-list');
