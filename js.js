@@ -174,6 +174,8 @@ async function loadReport(report) {
       const flightName = details.Grouping.OptionId ? (await getFlight(details.Grouping.OptionId)).Name : '';
       const creativeName = details.Grouping.CreativeId ? (await getCreative(details.Grouping.CreativeId)).Title : '';
       const siteName = details.Grouping.SiteId ? (await getSite(details.Grouping.SiteId)).Title : '';
+      const dma = details.Grouping.MetroCode ? details.Grouping.MetroCode : '';
+      const metro = details.Grouping.MetroCode ? DMA_CODES[details.Grouping.MetroCode] : '';
 
       const tr = body.appendChild(document.createElement('tr'));
       tr.appendChild(document.createElement('td')).innerHTML = details.FirstDate.substr(0, 10);
@@ -184,12 +186,14 @@ async function loadReport(report) {
       tr.appendChild(document.createElement('td')).innerHTML = siteName;
       tr.appendChild(document.createElement('td')).innerHTML = zoneName;
       tr.appendChild(document.createElement('td')).innerHTML = details.Grouping.CountryCode ? details.Grouping.CountryCode : '';
-      tr.appendChild(document.createElement('td')).innerHTML = details.Grouping.MetroCode ? details.Grouping.MetroCode : '';
+      tr.appendChild(document.createElement('td')).innerHTML = dma;
+      tr.appendChild(document.createElement('td')).innerHTML = metro;
       tr.appendChild(document.createElement('td')).innerHTML = details.Impressions;
     }
   }
 
   const tr = footer.appendChild(document.createElement('tr'));
+  tr.appendChild(document.createElement('td'));
   tr.appendChild(document.createElement('td'));
   tr.appendChild(document.createElement('td'));
   tr.appendChild(document.createElement('td'));
