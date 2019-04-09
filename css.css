@@ -177,7 +177,20 @@ fieldset:nth-child(6) { margin-top: 40px; }
   z-index: 100;
 }
 
-#report-download:hover {
+#report-copy {
+  background-color: #4CC713;
+  bottom: 0;
+  color: white;
+  cursor: pointer;
+  display: none;
+  padding: 10px 20px;
+  position: fixed;
+  right: 179px;
+  z-index: 100;
+}
+
+#report-download:hover,
+#report-copy:hover {
   background-color: #333;
   color: white;
 }
@@ -260,6 +273,7 @@ fieldset:nth-child(6) { margin-top: 40px; }
 }
 
 #report-result {
+  border-collapse: collapse;
   display: none;
   font-size: 12px;
   margin: 0 0 60px 0;
@@ -272,8 +286,21 @@ fieldset:nth-child(6) { margin-top: 40px; }
   text-align: left;
   user-select: none;
 }
-#report-result th:hover { background: #1a1a1a; color: white; }
 
-#report-result tfoot tr {
-  background: #ccc;
+#report-result td {
+  padding: 2px;
+}
+
+#report-result td.hi,
+#report-result th.hi {
+  background: #ddd;
+  cursor: copy;
+}
+
+#report-result tfoot {
+  border-top: 3px solid #1a1a1a;
+}
+
+#report-result tfoot td {
+  padding-top: 8px;
 }
