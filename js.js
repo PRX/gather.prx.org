@@ -1,7 +1,7 @@
 const COMMON_HEADERS = { 'X-Adzerk-ApiKey': null };
 const BASE_URL = 'https://62y4dsxai6.execute-api.us-east-1.amazonaws.com/prod';
-
-CACHE = {
+let CANCEL_REPORT = false;
+const CACHE = {
   zones: {},
   creatives: {},
   flights: {},
@@ -143,7 +143,10 @@ async function getReport(reportId) {
     (async function waitForReport() {
       const report = await _getReport(reportId);
 
-      if (report.Status === 3) {
+      if (CANCEL_REPORT) {
+        CANCEL_REPORT = false;
+        resolve();
+      } else if (report.Status === 3) {
         console.log('Report error');
         reject();
       } else if (report.Status === 2) {
@@ -151,10 +154,18 @@ async function getReport(reportId) {
         resolve(report.Result);
       } else {
         console.log('Report not ready; waiting to try again.');
-        setTimeout(waitForReport, 5000);
+        setTimeout(waitForReport, 1000);
       }
     })();
   });
+}
+
+function cancelReport() {
+  if (document.getElementById('generate-report').disabled) {
+    CANCEL_REPORT = true;
+    const createReportEl = document.getElementById('generate-report');
+    createReportEl.value = 'Canceling…';
+  }
 }
 
 async function loadReport(report) {
@@ -298,7 +309,7 @@ async function generateReport(e) {
     const label = createReportEl.value;
 
     createReportEl.disabled = true;
-    createReportEl.value = 'Working…';
+    createReportEl.value = 'Waiting for Adzerk (⎋ to cancel)';
     createReportEl.classList.add('working');
 
     loadReport(await getReport((await createQueuedReport()).Id));
@@ -358,12 +369,14 @@ function hotkeys(e) {
     e.preventDefault(); document.getElementById('generate-report').click();
   } else if (e.metaKey && e.key === 'f') {
     e.preventDefault(); document.getElementById('campaigns-filter').focus();
-    e.preventDefault(); toggleDateGuesser();
   } else if (e.metaKey && e.shiftKey && e.key === 'd') {
     e.preventDefault(); copyReport();
   } else if (e.metaKey && e.key === 'd') {
     e.preventDefault(); downloadReport();
   } else if (e.metaKey && e.key === 'l') {
+    e.preventDefault(); toggleDateGuesser();
+  } else if (e.key === 'Escape') {
+    cancelReport();
   }
 }
 
