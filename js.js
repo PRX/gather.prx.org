@@ -1,7 +1,7 @@
 const COMMON_HEADERS = { 'X-Adzerk-ApiKey': null };
 const BASE_URL = 'https://62y4dsxai6.execute-api.us-east-1.amazonaws.com/prod';
-
-CACHE = {
+let CANCEL_REPORT = false;
+const CACHE = {
   zones: {},
   creatives: {},
   flights: {},
@@ -143,7 +143,10 @@ async function getReport(reportId) {
     (async function waitForReport() {
       const report = await _getReport(reportId);
 
-      if (report.Status === 3) {
+      if (CANCEL_REPORT) {
+        CANCEL_REPORT = false;
+        resolve();
+      } else if (report.Status === 3) {
         console.log('Report error');
         reject();
       } else if (report.Status === 2) {
@@ -151,17 +154,25 @@ async function getReport(reportId) {
         resolve(report.Result);
       } else {
         console.log('Report not ready; waiting to try again.');
-        setTimeout(waitForReport, 5000);
+        setTimeout(waitForReport, 1000);
       }
     })();
   });
 }
 
+function cancelReport() {
+  if (document.getElementById('generate-report').disabled) {
+    CANCEL_REPORT = true;
+    const createReportEl = document.getElementById('generate-report');
+    createReportEl.value = 'Canceling…';
+  }
+}
+
 async function loadReport(report) {
-  console.log(report)
   document.getElementById('report-placeholder').style.display = 'none';
   document.getElementById('report-result').style.display = 'table';
   document.getElementById('report-download').style.display = 'block';
+  document.getElementById('report-copy').style.display = 'block';
   const body = document.getElementById('report-result-body');
   const footer = document.getElementById('report-result-footer');
   body.innerHTML = footer.innerHTML = '';
@@ -204,6 +215,27 @@ async function loadReport(report) {
   tr.appendChild(document.createElement('td'));
   tr.appendChild(document.createElement('td'));
   tr.appendChild(document.createElement('td')).innerHTML = report.TotalImpressions;
+
+  Array.from(document.querySelectorAll('#report-result tr td')).forEach(td =>{
+    td.addEventListener('click', copyTableColumn);
+    td.addEventListener('mouseover', columnHighlight);
+    td.addEventListener('mouseout', clearColumnHighlight);
+  });
+}
+
+function columnHighlight(e) {
+  e.preventDefault();
+  const columnIndex = Array.from(e.target.parentNode.children).indexOf(e.target);
+  Array.from(document.querySelectorAll(`#report-result tbody td:nth-child(${columnIndex + 1}), #report-result th:nth-child(${columnIndex + 1})`)).forEach(td => {
+    td.classList.add('hi');
+  });
+}
+
+function clearColumnHighlight(e) {
+  e.preventDefault();
+  Array.from(document.querySelectorAll('#report-result .hi')).forEach(td =>{
+    td.classList.remove('hi');
+  })
 }
 
 function filterCampaigns(e) {
@@ -277,7 +309,7 @@ async function generateReport(e) {
     const label = createReportEl.value;
 
     createReportEl.disabled = true;
-    createReportEl.value = 'Working…';
+    createReportEl.value = 'Waiting for Adzerk (⎋ to cancel)';
     createReportEl.classList.add('working');
 
     loadReport(await getReport((await createQueuedReport()).Id));
@@ -289,11 +321,11 @@ async function generateReport(e) {
 }
 
 function downloadReport() {
-  const csv = Array.from(document.querySelectorAll('#report-result tr')).map(row => {
-    return Array.from(row.querySelectorAll('th,td')).map(c => `"${c.innerHTML.replace(/"/g, '""')}"`).join(',')
-  }).join('\n')
+  if (document.getElementById('report-result').style.display === 'table') {
+    const csv = Array.from(document.querySelectorAll('#report-result tr')).map(row => {
+      return Array.from(row.querySelectorAll('th,td')).map(c => `"${c.innerHTML.replace(/"/g, '""')}"`).join(',')
+    }).join('\n')
 
-  if (csv.length > 100) {
     anchor = document.createElement('a');
     anchor.setAttribute('href', encodeURI(`data:text/csv;charset=utf-8,${csv}`));
     anchor.setAttribute('download', `${document.getElementById('advertiser').value} - ${+(new Date())}.csv`);
@@ -301,15 +333,28 @@ function downloadReport() {
   }
 }
 
+function copyReport() {
+  if (document.getElementById('report-result').style.display === 'table') {
+    const tsv = Array.from(document.querySelectorAll('#report-result tr')).map(row => {
+      return Array.from(row.querySelectorAll('th,td')).map(c => c.innerHTML).join('\t')
+    }).join('\n')
+    copy(tsv);
+  }
+}
+
 function copyTableColumn(e) {
   e.preventDefault();
 
   const columnIndex = Array.from(e.target.parentNode.children).indexOf(e.target);
-  const values = Array.from(document.querySelectorAll(`#report-result td:nth-child(${columnIndex + 1})`)).map(c => c.innerText);
+  const values = Array.from(document.querySelectorAll(`#report-result tbody td:nth-child(${columnIndex + 1})`)).map(c => c.innerText);
 
+  copy(values.join('\n'));
+}
+
+function copy(text) {
   const el = document.createElement('textarea');
   document.getElementById('void').appendChild(el);
-  el.textContent = values.join('\n');
+  el.textContent = text;
 
   window.getSelection().removeAllRanges();
   el.select();
@@ -324,10 +369,14 @@ function hotkeys(e) {
     e.preventDefault(); document.getElementById('generate-report').click();
   } else if (e.metaKey && e.key === 'f') {
     e.preventDefault(); document.getElementById('campaigns-filter').focus();
+  } else if (e.metaKey && e.shiftKey && e.key === 'd') {
+    e.preventDefault(); copyReport();
   } else if (e.metaKey && e.key === 'd') {
     e.preventDefault(); downloadReport();
   } else if (e.metaKey && e.key === 'l') {
     e.preventDefault(); toggleDateGuesser();
+  } else if (e.key === 'Escape') {
+    cancelReport();
   }
 }
 
@@ -342,6 +391,7 @@ function hotkeys(e) {
     document.getElementById('campaigns').addEventListener('input', guessDateRange);
     document.getElementById('generate-report').addEventListener('click', generateReport);
     document.getElementById('report-download').addEventListener('click', downloadReport);
+    document.getElementById('report-copy').addEventListener('click', copyReport);
     document.getElementById('date-locked').addEventListener('click', toggleDateGuesser);
     Array.from(document.querySelectorAll('#report-result th')).forEach(h => h.addEventListener('click', copyTableColumn));
 
