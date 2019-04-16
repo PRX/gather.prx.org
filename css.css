@@ -292,7 +292,8 @@ fieldset:nth-child(6) { margin-top: 40px; }
 }
 
 #report-result td.hi,
-#report-result th.hi {
+#report-result th.hi,
+#report-result tfoot td:hover {
   background: #ddd;
   cursor: copy;
 }

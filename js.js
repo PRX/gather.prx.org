@@ -221,6 +221,10 @@ async function loadReport(report) {
     td.addEventListener('mouseover', columnHighlight);
     td.addEventListener('mouseout', clearColumnHighlight);
   });
+
+  Array.from(document.querySelectorAll('#report-result tfoot tr td')).forEach(td =>{
+    td.addEventListener('click', copyTableCell);
+  });
 }
 
 function columnHighlight(e) {
@@ -349,6 +353,10 @@ function copyTableColumn(e) {
   const values = Array.from(document.querySelectorAll(`#report-result tbody td:nth-child(${columnIndex + 1})`)).map(c => c.innerText);
 
   copy(values.join('\n'));
+}
+
+function copyTableCell(e) {
+  copy(e.target.innerText);
 }
 
 function copy(text) {
