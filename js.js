@@ -216,7 +216,7 @@ async function loadReport(report) {
   tr.appendChild(document.createElement('td'));
   tr.appendChild(document.createElement('td')).innerHTML = report.TotalImpressions;
 
-  Array.from(document.querySelectorAll('#report-result tr td')).forEach(td =>{
+  Array.from(document.querySelectorAll('#report-result tbody tr td')).forEach(td =>{
     td.addEventListener('click', copyTableColumn);
     td.addEventListener('mouseover', columnHighlight);
     td.addEventListener('mouseout', clearColumnHighlight);
