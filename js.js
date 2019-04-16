@@ -230,7 +230,7 @@ async function loadReport(report) {
 function columnHighlight(e) {
   e.preventDefault();
   const columnIndex = Array.from(e.target.parentNode.children).indexOf(e.target);
-  Array.from(document.querySelectorAll(`#report-result tbody td:nth-child(${columnIndex + 1}), #report-result th:nth-child(${columnIndex + 1})`)).forEach(td => {
+  Array.from(document.querySelectorAll(`#report-result tbody td:nth-child(${columnIndex + 1})`)).forEach(td => {
     td.classList.add('hi');
   });
 }
