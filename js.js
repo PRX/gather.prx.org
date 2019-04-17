@@ -1,72 +1,23 @@
 const COMMON_HEADERS = { 'X-Adzerk-ApiKey': null };
 const BASE_URL = 'https://62y4dsxai6.execute-api.us-east-1.amazonaws.com/prod';
 let CANCEL_REPORT = false;
-const CACHE = {
-  zones: {},
-  creatives: {},
-  flights: {},
-  sites: {}
-};
+const METACACHE = {};
 
+// Handles requests for:
 // https://dev.adzerk.com/v1.0/reference/zone#get-zon
-function getZone(zoneId) {
-  return new Promise((resolve, reject) => {
-    if (CACHE.zones[zoneId]) {
-      resolve(CACHE.zones[zoneId]);
-    } else {
-      const url = `${BASE_URL}/management/v1/zone/${zoneId}`;
-
-      fetch(url, { headers: COMMON_HEADERS })
-        .then(response => response.json())
-        .then(data => { CACHE.zones[zoneId] = data; resolve(data); })
-        .catch(e => reject(e));
-    }
-  });
-}
-
 // https://dev.adzerk.com/v1.0/reference/creative#get-creative
-function getCreative(creativeId) {
-  return new Promise((resolve, reject) => {
-    if (CACHE.creatives[creativeId]) {
-      resolve(CACHE.creatives[creativeId]);
-    } else {
-      const url = `${BASE_URL}/management/v1/creative/${creativeId}`;
-
-      fetch(url, { headers: COMMON_HEADERS })
-        .then(response => response.json())
-        .then(data => { CACHE.creatives[creativeId] = data; resolve(data); })
-        .catch(e => reject(e));
-    }
-  });
-}
-
 // https://dev.adzerk.com/v1.0/reference/flight#get-flight
-function getFlight(flightId) {
-  return new Promise((resolve, reject) => {
-    if (CACHE.flights[flightId]) {
-      resolve(CACHE.flights[flightId]);
-    } else {
-      const url = `${BASE_URL}/management/v1/flight/${flightId}`;
-
-      fetch(url, { headers: COMMON_HEADERS })
-        .then(response => response.json())
-        .then(data => { CACHE.flights[flightId] = data; resolve(data); })
-        .catch(e => reject(e));
-    }
-  });
-}
-
 // https://dev.adzerk.com/v1.0/reference/site#get-site
-function getSite(sideId) {
-  return new Promise((resolve, reject) => {
-    if (CACHE.sites[sideId]) {
-      resolve(CACHE.sites[sideId]);
-    } else {
-      const url = `${BASE_URL}/management/v1/site/${sideId}`;
+function getMeta(type, id) {
+  const url = `${BASE_URL}/management/v1/${type}/${id}`;
 
+  return new Promise((resolve, reject) => {
+    if (METACACHE[url]) {
+      resolve(METACACHE[url]);
+    } else {
       fetch(url, { headers: COMMON_HEADERS })
         .then(response => response.json())
-        .then(data => { CACHE.sites[sideId] = data; resolve(data); })
+        .then(data => { METACACHE[url] = data; resolve(data); })
         .catch(e => reject(e));
     }
   });
@@ -131,7 +82,7 @@ function requestData() {
 // https://dev.adzerk.com/v1.0/reference/queued-reports#poll-for-queued-report-result
 function _getReport(reportId) {
   return new Promise((resolve, reject) => {
-      fetch(`https://62y4dsxai6.execute-api.us-east-1.amazonaws.com/prod/reporting/v1/queue/${reportId}`, { headers: COMMON_HEADERS })
+      fetch(`${BASE_URL}/reporting/v1/queue/${reportId}`, { headers: COMMON_HEADERS })
         .then(response => response.json())
         .then(data => resolve(data))
         .catch(e => reject(e));
@@ -181,10 +132,10 @@ async function loadReport(report) {
     for (const details of record.Details) {
       const advertiserName = details.Grouping.BrandId ? document.getElementById('advertiser-list').advertisers.find(a => details.Grouping.BrandId === a.Id).Title : '';
       const campaignName = details.Grouping.CampaignId ? document.getElementById('campaigns').campaigns.find(c => details.Grouping.CampaignId === c.Id).Name : '';
-      const zoneName = details.Grouping.ZoneId ? (await getZone(details.Grouping.ZoneId)).Name : '';
-      const flightName = details.Grouping.OptionId ? (await getFlight(details.Grouping.OptionId)).Name : '';
-      const creativeName = details.Grouping.CreativeId ? (await getCreative(details.Grouping.CreativeId)).Title : '';
-      const siteName = details.Grouping.SiteId ? (await getSite(details.Grouping.SiteId)).Title : '';
+      const zoneName = details.Grouping.ZoneId ? (await getMeta('zone', details.Grouping.ZoneId)).Name : '';
+      const flightName = details.Grouping.OptionId ? (await getMeta('flight', details.Grouping.OptionId)).Name : '';
+      const creativeName = details.Grouping.CreativeId ? (await getMeta('creative', details.Grouping.CreativeId)).Title : '';
+      const siteName = details.Grouping.SiteId ? (await getMeta('site', details.Grouping.SiteId)).Title : '';
       const dma = details.Grouping.MetroCode ? details.Grouping.MetroCode : '';
       const metro = details.Grouping.MetroCode ? DMA_CODES[details.Grouping.MetroCode] : '';
 
