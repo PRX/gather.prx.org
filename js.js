@@ -150,7 +150,7 @@ async function loadReport(report) {
       tr.appendChild(document.createElement('td')).innerHTML = details.Grouping.CountryCode ? details.Grouping.CountryCode : '';
       tr.appendChild(document.createElement('td')).innerHTML = dma;
       tr.appendChild(document.createElement('td')).innerHTML = metro;
-      tr.appendChild(document.createElement('td')).innerHTML = details.Impressions.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+      tr.appendChild(document.createElement('td')).innerHTML = details.Impressions.toLocaleString();
     }
   }
 
