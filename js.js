@@ -165,7 +165,7 @@ async function loadReport(report) {
   tr.appendChild(document.createElement('td'));
   tr.appendChild(document.createElement('td'));
   tr.appendChild(document.createElement('td'));
-  tr.appendChild(document.createElement('td')).innerHTML = report.TotalImpressions;
+  tr.appendChild(document.createElement('td')).innerHTML = report.TotalImpressions.toLocaleString();
 
   Array.from(document.querySelectorAll('#report-result tbody tr td')).forEach(td =>{
     td.addEventListener('click', copyTableColumn);
