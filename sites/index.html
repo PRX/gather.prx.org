@@ -1,0 +1,50 @@
+<!doctype html>
+<html lang=en>
+  <head>
+    <meta charset=utf-8 />
+    <title>Report Gatherer</title>
+
+    <link rel=stylesheet href=../css.css>
+    <link rel=icon href=../favicon.png>
+    <link rel=preconnect crossorigin href="https://62y4dsxai6.execute-api.us-east-1.amazonaws.com">
+    <script src=js.js></script>
+  </head>
+  <body>
+    <div id=void></div>
+    <div id=key-error><h1>Invalid Adzerk API Key</h1></div>
+    <div id=grid>
+      <form>
+        <fieldset>
+          <input list=site-list id=site placeholder="Search sites (⌘K)" autofocus title="Search sites (⌘K)">
+          <datalist id=site-list></datalist>
+        </fieldset>
+
+        <fieldset>
+          <input type=date id=start-time value=2019-03-21>
+          <img style="visibility: hidden;" title="Lock dates (⌘L)" id=date-locked data-value=0 src="data:image/svg+xml;charset=utf-8;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiPz4NCjxzdmcgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIiB3aWR0aD0iMjAiIGhlaWdodD0iMjAiPg0KPHBhdGggZD0ibTMsOXYxMWgxNFY5TTQsOVY2YzAtMy4zIDIuNy02IDYtNmMzLjMsMCA2LDIuNyA2LDZ2M0gxNFY2YzAtMi4yLTEuOC00LTQtNC0yLjIsMC00LDEuOC00LDR2MyIvPg0KPC9zdmc+">
+          <input type=date id=end-time value=2019-03-25>
+        </fieldset>
+
+        <fieldset>
+          <input type=submit id=generate-report value="Generate Report (⌘G)" title="Generate report (⌘G)">
+        </fieldset>
+      </form>
+
+      <div id=report-download>Download (⌘D)</div>
+      <div id=report-copy>Copy (⇧⌘D)</div>
+      <div id=report>
+        <div id=report-placeholder><h1>Please Generate a Report</h1></div>
+        <table id=report-result>
+          <thead>
+            <tr>
+              <th>Campaign</th>
+              <th>Impressions</th>
+            </tr>
+          </thead>
+          <tbody id=report-result-body></tbody>
+          <tfoot id=report-result-footer></tfoot>
+        </table>
+      </div>
+    </div>
+  </body>
+</html>
