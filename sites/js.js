@@ -240,6 +240,10 @@ function hotkeys(e) {
     COMMON_HEADERS['X-Adzerk-ApiKey'] = window.location.search.match(/k=([a-zA-Z0-9]+)/)[1];
     if (COMMON_HEADERS['X-Adzerk-ApiKey']) { document.getElementById('key-error').style.display = 'none'; }
 
+    const href = document.getElementById('switch-mode-a').getAttribute('href');
+    const key = window.location.search.match(/k=([a-zA-Z0-9]+)/)[1];
+    document.getElementById('switch-mode-a').setAttribute('href', `${href}${key}`);
+
     document.onkeydown = hotkeys;
     document.getElementById('generate-report').addEventListener('click', generateReport);
     document.getElementById('report-download').addEventListener('click', downloadReport);

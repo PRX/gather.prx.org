@@ -152,6 +152,18 @@ fieldset:nth-child(6) { margin-top: 40px; }
 #generate-report:hover { background: #003A57; }
 #generate-report.working { background: #BD0089 }
 
+#switch-mode {
+  background-color: #4CC713;
+  bottom: 0;
+  color: white;
+  cursor: pointer;
+  padding: 10px 20px 10px 20px;
+  position: fixed;
+  left: 0;
+  z-index: 100;
+}
+#switch-mode a { color: inherit; text-decoration: none; }
+
 #report {
   grid-area: output;
   position: relative;
