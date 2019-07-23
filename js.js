@@ -23,7 +23,7 @@ function getMeta(type, id) {
   });
 }
 
-// https://dev.adzerk.com/v1.0/reference/advertiser#get-advertisers
+// https://dev.adzerk.com/reference/advertiser#list-advertisers
 function listAdvertisers() {
   return new Promise((resolve, reject) => {
     fetch(`${BASE_URL}/management/v1/advertiser`, { headers: COMMON_HEADERS })
