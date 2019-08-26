@@ -180,7 +180,7 @@ function downloadReport() {
 
     anchor = document.createElement('a');
     anchor.setAttribute('href', encodeURI(`data:text/csv;charset=utf-8,${csv}`));
-    anchor.setAttribute('download', `${document.getElementById('advertiser').value} - ${+(new Date())}.csv`);
+    anchor.setAttribute('download', `${document.getElementById('site').value} - ${+(new Date())}.csv`);
     anchor.click();
   }
 }
