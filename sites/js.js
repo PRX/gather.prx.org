@@ -128,6 +128,7 @@ async function loadReport(report) {
 
   Array.from(document.querySelectorAll('#report-result tbody tr td')).forEach(td =>{
     td.addEventListener('click', copyTableColumn);
+    td.addEventListener('dblclick', copyTableCell);
     td.addEventListener('mouseover', columnHighlight);
     td.addEventListener('mouseout', clearColumnHighlight);
   });
