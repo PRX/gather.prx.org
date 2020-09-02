@@ -201,8 +201,10 @@ function filterCampaigns(e) {
   campaignsEl.innerHTML = '';
 
   document.getElementById('campaigns-filter').value.split(' ').reduce((result, filter) => {
-    const re = new RegExp(filter.replace(/\?/g, '\\?'), 'i');
-    return (result||[]).filter(c => c.Name.match(re));
+    const term = filter.replace(/\?/g, '\\?');
+    const inc = new RegExp(term, 'i');
+    const exc = new RegExp(term.replace(/^\!/, ''), 'i');
+    return (result||[]).filter(c => term.startsWith('!') ? !c.Name.match(exc) : c.Name.match(inc));
   }, campaignsEl.campaigns).forEach(campaign => {
     const optionEl = document.createElement('option');
     optionEl.innerHTML = `${campaign.Id}: ${campaign.Name}`;
