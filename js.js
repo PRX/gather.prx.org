@@ -250,6 +250,7 @@ async function selectAdvertiser() {
     for (const campaign of campaignsEl.campaigns) {
       const optionEl = document.createElement('option');
       optionEl.innerHTML = `${campaign.Id}: ${campaign.Name}`;
+      optionEl.title = campaign.Name;
       campaignsEl.appendChild(optionEl);
     }
 
